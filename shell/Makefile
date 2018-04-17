@@ -14,4 +14,4 @@ vpt : parser_test
 
 .PHONY: clean
 clean:
-	rm -rf *.dSYM mysh
+	rm -rf *.dSYM mysh parser_test
