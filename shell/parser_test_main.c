@@ -35,7 +35,7 @@ void command_test()
 	destroy_jobs_handle(jh2);
 	destroy_job_parser(cp2);
 	
-	job_parser_handle cp3 = create_job_parser("cd;\n");
+	job_parser_handle cp3 = create_job_parser("cd+\n");
 	jobs_handle jh3 = run_job_parser(cp3);
 	assert(jh3->num_jobs == 1);
 	assert(strcmp("cd", jh3->jobs[0]->command_strings[0]) == 0);
@@ -59,7 +59,7 @@ void command_test()
 	destroy_jobs_handle(jh5);
 	destroy_job_parser(cp5);
 	
-	job_parser_handle cp6 = create_job_parser("   cd;  ls; cd   \n");
+	job_parser_handle cp6 = create_job_parser("   cd+  ls + cd   \n");
 	jobs_handle jh6 = run_job_parser(cp6);
 	assert(jh6->num_jobs == 3);
 	assert(strcmp("cd", jh6->jobs[0]->command_strings[0]) == 0);
@@ -152,7 +152,7 @@ void arg_test()
 	destroy_jobs_handle(jh5);
 	destroy_job_parser(cp5);
 	
-	job_parser_handle cp6 = create_job_parser("   cd;  ls -a -a -a -a -a -a -a; cd   \n");
+	job_parser_handle cp6 = create_job_parser("   cd+  ls -a -a -a -a -a -a -a | grep -a \".c\"+ cd   \n");
 	jobs_handle jh6 = run_job_parser(cp6);
 	assert(jh6->num_jobs == 3);
 	assert(strcmp("cd", jh6->jobs[0]->command_strings[0]) == 0);
@@ -160,12 +160,14 @@ void arg_test()
 	assert(jh6->jobs[0]->job_type == normal_t); //SHOULD BE SERIAL, BECAUSE THERE ARE MULTIPLE
 	assert(strcmp("ls", jh6->jobs[1]->command_strings[0]) == 0);
 	assert(jh6->jobs[1]->arg_counts[0] == 7);
+	assert(jh6->jobs[1]->arg_counts[1] == 2);
 	for (int i = 0; i < jh6->jobs[1]->arg_counts[0]; i++)
 	{
 		assert(strcmp("-a", jh6->jobs[1]->args[0][i]) == 0);
 	}
-	assert(jh6->jobs[1]->job_type == normal_t);
+	assert(jh6->jobs[1]->job_type == piped_t);
 	assert(jh6->jobs[1]->command_types[0] == external_t);
+	assert(jh6->jobs[1]->arg_counts[1] == 2);
 	assert(strcmp("cd", jh6->jobs[2]->command_strings[0]) == 0);
 	assert(jh6->jobs[2]->job_type == normal_t);
 	assert(jh6->jobs[2]->command_types[0] == built_in_t);
