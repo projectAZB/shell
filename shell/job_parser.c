@@ -47,6 +47,7 @@ void process_job_segment(char * command_line, size_t * index, size_t * num_comma
 		(*command_strings)[*num_commands - 1] = strdup(command_buffer);
 		
 		size_t arg_count = 0;
+		(*arg_counts) = (size_t *)realloc(*arg_counts, sizeof(size_t) * (*num_commands));
 		(*arg_counts)[*num_commands - 1] = arg_count;
 		(*args)[*num_commands - 1] = (char **)malloc(sizeof(char *));
 		if (is_job_end(command_line[*index])) { //no arguments
@@ -72,7 +73,6 @@ void process_job_segment(char * command_line, size_t * index, size_t * num_comma
 						(*index)++;
 					}
 				}
-				*arg_counts = (size_t *)realloc(*arg_counts, sizeof(*arg_counts) * arg_count);
 				(*arg_counts)[*num_commands - 1] = arg_count;
 			}
 		}
@@ -109,7 +109,7 @@ jobs_handle run_job_parser(job_parser_handle job_parser)
 	char * command_line = strdup(job_parser->command_string);
 	size_t index = 0;
 	
-	//set up datafor jobs_handle
+	//set up data for jobs_handle
 	jobs_mode jobs_mode = serial_m;
 	size_t num_jobs = 0;
 	job_handle * jobs = (job_handle *)malloc(sizeof(*jobs));
@@ -131,7 +131,7 @@ jobs_handle run_job_parser(job_parser_handle job_parser)
 		
 		//job is ready to be added
 		num_jobs++;
-		jobs = (job_handle *)realloc(jobs, sizeof(*jobs) * num_jobs);
+		jobs = (job_handle *)realloc(jobs, sizeof(job_handle) * num_jobs);
 		jobs[num_jobs - 1] = create_job(num_commands, command_strings, arg_counts, args, job_type);
 		
 		//free up stuff
@@ -161,10 +161,21 @@ jobs_handle run_job_parser(job_parser_handle job_parser)
 	free(command_line);
 	
 	if (parallel && serial) { //badly formatted input (;'s and +'s)
+		for (int i = 0; i < num_jobs; i++)
+		{
+			destroy_job(jobs[i]);
+		}
+		free(jobs);
 		return NULL;
 	}
 	
 	jobs_handle result = create_jobs_handle(jobs_mode, jobs, num_jobs);
+	
+	for (int i = 0; i < num_jobs; i++)
+	{
+		destroy_job(jobs[i]);
+	}
+	free(jobs);
 	
 	return result;
 }

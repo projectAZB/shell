@@ -31,16 +31,16 @@ job_handle create_job(size_t num_commands, char ** command_strings, size_t * arg
 {
 	job_handle new = (job_handle)malloc(sizeof(*new));
 	new->num_commands = num_commands;
-	new->command_strings = (char **)malloc(sizeof(*(new->command_strings)) * num_commands);
+	new->command_strings = (char **)malloc(sizeof(char *) * num_commands);
 	new->arg_counts = (size_t *)malloc(sizeof(size_t) * num_commands);
-	new->args = (char ***)malloc(sizeof(char ***) * num_commands);
-	new->command_types = (command_type *)malloc(sizeof(char *) * num_commands);
+	new->args = (char ***)malloc(sizeof(char **) * num_commands);
+	new->command_types = (command_type *)malloc(sizeof(command_type) * num_commands);
 	new->job_type = job_type;
 	for (int i = 0; i < new->num_commands; i++)
 	{
 		new->command_strings[i] = strdup(command_strings[i]);
 		new->arg_counts[i] = arg_counts[i];
-		new->args[i] = (char **)malloc(sizeof(char *) * arg_counts[i]);
+		new->args[i] = arg_counts[i] == 0 ? (char **)malloc(sizeof(char *)) : (char **)malloc(sizeof(char *) * arg_counts[i]);
 		for (int j = 0; j < arg_counts[i]; j++)
 		{
 			new->args[i][j] = strdup(args[i][j]);
