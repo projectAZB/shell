@@ -152,8 +152,22 @@ jobs_handle run_job_parser(job_parser_handle job_parser)
 		free(arg_counts);
 		free(args);
 		
+		//process end of the line characters
+		if (command_line[index] == SEMICOLON) {
+			serial = true;
+		}
+		else if (command_line[index] == PLUS) {
+			parallel = true;
+		}
 		index++; //if it's end of line, will end normally
+		//otherwise cycle through junk
 		while (is_ignored_space(command_line[index]) || is_job_end(command_line[index])) {
+			if (command_line[index] == SEMICOLON) {
+				serial = true;
+			}
+			else if (command_line[index] == PLUS) {
+				parallel = true;
+			}
 			(index)++;
 		}
 	}
@@ -167,6 +181,13 @@ jobs_handle run_job_parser(job_parser_handle job_parser)
 		}
 		free(jobs);
 		return NULL;
+	}
+	
+	if (parallel) {
+		jobs_mode = parallel_m;
+	}
+	else if (serial) {
+		jobs_mode = serial_m;
 	}
 	
 	jobs_handle result = create_jobs_handle(jobs_mode, jobs, num_jobs);

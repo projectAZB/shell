@@ -211,10 +211,28 @@ void arg_test()
 	destroy_job_parser(cp8);
 }
 
+void mixed_test() {
+	job_parser_handle cp1 = create_job_parser("cd ; ls+\n");
+	jobs_handle jh1 = run_job_parser(cp1);
+	assert(jh1 == NULL);
+	destroy_job_parser(cp1);
+	
+	job_parser_handle cp2 = create_job_parser("cd;;+++ls\n");
+	jobs_handle jh2 = run_job_parser(cp2);
+	assert(jh2 == NULL);
+	destroy_job_parser(cp2);
+	
+	job_parser_handle cp3 = create_job_parser("cd;;+++\n");
+	jobs_handle jh3 = run_job_parser(cp3);
+	assert(jh3 == NULL);
+	destroy_job_parser(cp3);
+}
+
 int main(int argc, const char * argv[]) {
 	
 	command_test();
 	arg_test();
+	mixed_test();
 	
 	return 0;
 }
