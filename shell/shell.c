@@ -14,15 +14,14 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
-#include <unistd.h>
 #include <ctype.h>
 
 #include "job_parser.h"
+#include "executor.h"
+#include "error.h"
 
 #define BUF_SIZE 514
 #define SHELL "520sh> "
-
-void print_error(void);
 
 struct shell {
 	size_t runs;
@@ -64,6 +63,9 @@ void start_shell(shell_handle shell)
 		}
 		job_parser_handle job_parser = create_job_parser(buffer);
 		jobs_handle jobs = run_job_parser(job_parser);
+		executor_handle executor = create_executor(jobs);
+		run(executor);
+		destroy_executor(executor);
 		if (jobs == NULL) {
 			print_error(); //input was incorrectly formatted
 		}
@@ -74,10 +76,4 @@ void start_shell(shell_handle shell)
 
 void destroy_shell(shell_handle shell) {
 	free(shell);
-}
-
-void print_error()
-{
-	char error_message[30] = "An error has occurred\n";
-	write(STDOUT_FILENO, error_message, 30);
 }
