@@ -42,5 +42,6 @@ void destroy_job(job_handle job);
 
 char ** argv_for_job(job_handle job, int command_index);
 size_t argc_for_job(job_handle job, int command_index);
+void destroy_argv(char ** argv, int argc);
 
 #endif

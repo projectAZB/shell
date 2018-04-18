@@ -95,7 +95,14 @@ size_t argc_for_job(job_handle job, int command_index)
 	return (job->arg_counts[command_index] + 1);
 }
 
-
+void destroy_argv(char ** argv, int argc)
+{
+	for (int i = 0; i < argc; i++)
+	{
+		free(argv[i]);
+	}
+	free(argv);
+}
 
 
 

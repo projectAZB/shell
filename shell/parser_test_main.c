@@ -22,14 +22,14 @@ void command_test()
 	assert(argc_for_job(jh1->jobs[0], 0));
 	char ** argv1 = argv_for_job(jh1->jobs[0], 0); //the second is the command_index into the job
 	assert(strcmp(argv1[0], "cd") == 0);
-	free(argv1);
+	destroy_argv(argv1, argc_for_job(jh1->jobs[0], 0));
 	assert(jh1->jobs[0]->command_types[0] == built_in_t);
 	assert(strcmp("ls", jh1->jobs[0]->command_strings[1]) == 0);
 	assert(jh1->jobs[0]->command_types[1] == external_t);
 	assert(argc_for_job(jh1->jobs[0], 1));
 	argv1 = argv_for_job(jh1->jobs[0], 1);
 	assert(strcmp(argv1[0], "ls") == 0);
-	free(argv1);
+	destroy_argv(argv1, argc_for_job(jh1->jobs[0], 1));
 	destroy_jobs_handle(jh1);
 	destroy_job_parser(cp1);
 	
@@ -43,7 +43,7 @@ void command_test()
 	assert(argc_for_job(jh2->jobs[1], 0) == 1);
 	char ** argv2 = argv_for_job(jh2->jobs[1], 0);
 	assert(strcmp(argv2[0], "ls") == 0);
-	free(argv2);
+	destroy_argv(argv2, argc_for_job(jh2->jobs[1], 0));
 	destroy_jobs_handle(jh2);
 	destroy_job_parser(cp2);
 	
@@ -55,7 +55,7 @@ void command_test()
 	assert(argc_for_job(jh3->jobs[0], 0) == 1);
 	char ** argv3 = argv_for_job(jh3->jobs[0], 0);
 	assert(strcmp(argv3[0], "cd") == 0);
-	free(argv3);
+	destroy_argv(argv3, argc_for_job(jh3->jobs[0], 0));
 	destroy_jobs_handle(jh3);
 	destroy_job_parser(cp3);
 	
@@ -133,7 +133,7 @@ void arg_test()
 	char ** argv1 = argv_for_job(jh1->jobs[0], 0);
 	assert(strcmp(argv1[0], "ls") == 0);
 	assert(strcmp(argv1[1], "-a") == 0);
-	free(argv1);
+	destroy_argv(argv1, argc_for_job(jh1->jobs[0], 0));
 	destroy_jobs_handle(jh1);
 	destroy_job_parser(cp1);
 	
@@ -162,7 +162,7 @@ void arg_test()
 	char ** argv3 = argv_for_job(jh3->jobs[1], 0);
 	assert(strcmp(argv3[0], "grep") == 0);
 	assert(strcmp(argv3[1], "\".h\"") == 0);
-	free(argv3);
+	destroy_argv(argv3, argc_for_job(jh3->jobs[1], 0));
 	
 	destroy_jobs_handle(jh3);
 	destroy_job_parser(cp3);
