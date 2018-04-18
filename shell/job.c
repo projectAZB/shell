@@ -81,12 +81,13 @@ char ** argv_for_job(job_handle job, int command_index)
 		assert(false);
 	}
 	size_t arg_count = job->arg_counts[command_index];
-	char ** argv = (char **)malloc(sizeof(char *) * (arg_count + 1)); //arg strings and one for command_string
+	char ** argv = (char **)malloc(sizeof(char *) * (arg_count + 2)); //arg strings and one for command_string, one for null
 	int index = 0;
 	argv[index++] = strdup(job->command_strings[command_index]);
 	for (int i = 0; i < arg_count; i++) {
 		argv[index++] = strdup(job->args[command_index][i]);
 	}
+	argv[index] = NULL;
 	return argv;
 }
 
