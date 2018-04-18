@@ -15,6 +15,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "built_in.h"
+
 struct executor {
 	jobs_handle jobs;
 };
@@ -39,16 +41,17 @@ void run_serial_job(executor_handle executor)
 	{
 		job_handle job = jobs->jobs[i];
 		job_type job_type = job->job_type;
+		char ** argv = argv_for_job(job, 0);
+		size_t argc = argc_for_job(job, 0);
 		
 		if (job_type == normal_t) {
 			if (job->command_types[0] == built_in_t) { //no need to fork a process for the built-in
 				char buffer[] = "built_in\n";
 				write(STDOUT_FILENO, buffer, strlen(buffer));
+				run_built_in_command_with_args(argv);
 			}
 			else {
 				pid_t pid = fork();
-				char ** argv = argv_for_job(job, 0);
-				size_t argc = argc_for_job(job, 0);
 				if (pid == -1) { //fork failed
 					exit(5);
 				}
@@ -60,7 +63,6 @@ void run_serial_job(executor_handle executor)
 					char buffer[] = "done\n";
 					write(STDOUT_FILENO, buffer, strlen(buffer));
 				}
-				destroy_argv(argv, argc);
 				char buffer[] = "external\n";
 				write(STDOUT_FILENO, buffer, strlen(buffer));
 			}
@@ -74,6 +76,8 @@ void run_serial_job(executor_handle executor)
 		else {
 			assert(false); // should only be one of the three types
 		}
+		
+		destroy_argv(argv, argc);
 	}
 }
 
