@@ -40,4 +40,7 @@ job_handle create_job(size_t num_jobs, char ** command_strings, size_t * arg_cou
 job_handle copy_job(const job_handle job);
 void destroy_job(job_handle job);
 
+char ** argv_for_job(job_handle job, int command_index);
+size_t argc_for_job(job_handle job, int command_index);
+
 #endif

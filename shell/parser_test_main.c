@@ -19,9 +19,17 @@ void command_test()
 	jobs_handle jh1 = run_job_parser(cp1);
 	assert(jh1->num_jobs == 1);
 	assert(strcmp("cd", jh1->jobs[0]->command_strings[0]) == 0);
+	assert(argc_for_job(jh1->jobs[0], 0));
+	char ** argv1 = argv_for_job(jh1->jobs[0], 0); //the second is the command_index into the job
+	assert(strcmp(argv1[0], "cd") == 0);
+	free(argv1);
 	assert(jh1->jobs[0]->command_types[0] == built_in_t);
 	assert(strcmp("ls", jh1->jobs[0]->command_strings[1]) == 0);
 	assert(jh1->jobs[0]->command_types[1] == external_t);
+	assert(argc_for_job(jh1->jobs[0], 1));
+	argv1 = argv_for_job(jh1->jobs[0], 1);
+	assert(strcmp(argv1[0], "ls") == 0);
+	free(argv1);
 	destroy_jobs_handle(jh1);
 	destroy_job_parser(cp1);
 	
@@ -32,6 +40,10 @@ void command_test()
 	assert(jh2->jobs[0]->command_types[0] == built_in_t);
 	assert(strcmp("ls", jh2->jobs[1]->command_strings[0]) == 0);
 	assert(jh2->jobs[1]->command_types[0] == external_t);
+	assert(argc_for_job(jh2->jobs[1], 0) == 1);
+	char ** argv2 = argv_for_job(jh2->jobs[1], 0);
+	assert(strcmp(argv2[0], "ls") == 0);
+	free(argv2);
 	destroy_jobs_handle(jh2);
 	destroy_job_parser(cp2);
 	
@@ -40,6 +52,10 @@ void command_test()
 	assert(jh3->num_jobs == 1);
 	assert(strcmp("cd", jh3->jobs[0]->command_strings[0]) == 0);
 	assert(jh3->jobs[0]->command_types[0] == built_in_t);
+	assert(argc_for_job(jh3->jobs[0], 0) == 1);
+	char ** argv3 = argv_for_job(jh3->jobs[0], 0);
+	assert(strcmp(argv3[0], "cd") == 0);
+	free(argv3);
 	destroy_jobs_handle(jh3);
 	destroy_job_parser(cp3);
 	
@@ -64,7 +80,7 @@ void command_test()
 	assert(jh6->num_jobs == 3);
 	assert(strcmp("cd", jh6->jobs[0]->command_strings[0]) == 0);
 	assert(jh6->jobs[0]->command_types[0] == built_in_t);
-	assert(jh6->jobs[0]->job_type == normal_t); //SHOULD BE SERIAL, BECAUSE THERE ARE MULTIPLE
+	assert(jh6->jobs[0]->job_type == normal_t);
 	assert(strcmp("ls", jh6->jobs[1]->command_strings[0]) == 0);
 	assert(jh6->jobs[1]->job_type == normal_t);
 	assert(jh6->jobs[1]->command_types[0] == external_t);
@@ -113,6 +129,11 @@ void arg_test()
 	assert(jh1->jobs[0]->command_types[0] == external_t);
 	assert(jh1->jobs[0]->arg_counts[0] == 1);
 	assert(strcmp("-a", jh1->jobs[0]->args[0][0]) == 0);
+	assert(argc_for_job(jh1->jobs[0], 0) == 2);
+	char ** argv1 = argv_for_job(jh1->jobs[0], 0);
+	assert(strcmp(argv1[0], "ls") == 0);
+	assert(strcmp(argv1[1], "-a") == 0);
+	free(argv1);
 	destroy_jobs_handle(jh1);
 	destroy_job_parser(cp1);
 	
@@ -133,6 +154,16 @@ void arg_test()
 	assert(jh3->jobs[0]->command_types[0] == built_in_t);
 	assert(strcmp(jh3->jobs[1]->command_strings[0], "grep") == 0);
 	assert(jh3->jobs[1]->arg_counts[0] == 1);
+	assert(argc_for_job(jh3->jobs[0], 0) == 1);
+	assert(argc_for_job(jh3->jobs[1], 0) == 2);
+	assert(argc_for_job(jh3->jobs[2], 0) == 1);
+	assert(argc_for_job(jh3->jobs[3], 0) == 1);
+	
+	char ** argv3 = argv_for_job(jh3->jobs[1], 0);
+	assert(strcmp(argv3[0], "grep") == 0);
+	assert(strcmp(argv3[1], "\".h\"") == 0);
+	free(argv3);
+	
 	destroy_jobs_handle(jh3);
 	destroy_job_parser(cp3);
 	
@@ -157,10 +188,12 @@ void arg_test()
 	assert(jh6->num_jobs == 3);
 	assert(strcmp("cd", jh6->jobs[0]->command_strings[0]) == 0);
 	assert(jh6->jobs[0]->command_types[0] == built_in_t);
-	assert(jh6->jobs[0]->job_type == normal_t); //SHOULD BE SERIAL, BECAUSE THERE ARE MULTIPLE
+	assert(jh6->jobs[0]->job_type == normal_t);
 	assert(strcmp("ls", jh6->jobs[1]->command_strings[0]) == 0);
 	assert(jh6->jobs[1]->arg_counts[0] == 7);
 	assert(jh6->jobs[1]->arg_counts[1] == 2);
+	assert(argc_for_job(jh6->jobs[1], 0) == 8);
+	assert(argc_for_job(jh6->jobs[1], 1) == 3);
 	for (int i = 0; i < jh6->jobs[1]->arg_counts[0]; i++)
 	{
 		assert(strcmp("-a", jh6->jobs[1]->args[0][i]) == 0);

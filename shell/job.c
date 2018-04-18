@@ -10,6 +10,8 @@
 #include "constants.h"
 
 #include <string.h>
+#include <assert.h>
+#include <stdbool.h>
 
 command_type command_type_from_string(const char * command_string)
 {
@@ -73,9 +75,25 @@ void destroy_job(job_handle job)
 	free(job);
 }
 
+char ** argv_for_job(job_handle job, int command_index)
+{
+	if (command_index >= job->num_commands) {
+		assert(false);
+	}
+	size_t arg_count = job->arg_counts[command_index];
+	char ** argv = (char **)malloc(sizeof(char *) * (arg_count + 1)); //arg strings and one for command_string
+	int index = 0;
+	argv[index++] = strdup(job->command_strings[command_index]);
+	for (int i = 0; i < arg_count; i++) {
+		argv[index++] = strdup(job->args[command_index][i]);
+	}
+	return argv;
+}
 
-
-
+size_t argc_for_job(job_handle job, int command_index)
+{
+	return (job->arg_counts[command_index] + 1);
+}
 
 
 
