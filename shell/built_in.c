@@ -21,7 +21,11 @@ void run_quit() {
 	exit(EXIT_SUCCESS);
 }
 
-void run_pwd() {
+void run_pwd(char ** argv, size_t argc) {
+	if (argc > 1) {
+		print_error();
+		return;
+	}
 	size_t size = pathconf(".", _PC_PATH_MAX);
 	char * buffer = (char *)malloc(sizeof(char) * size);
 	getcwd(buffer, size);
@@ -56,7 +60,7 @@ void run_built_in_command_with_args(char ** argv, size_t argc)
 		run_quit();
 	}
 	else if (strcmp(PWD, command_string) == 0) {
-		run_pwd();
+		run_pwd(argv, argc);
 		return;
 	}
 	else if (strcmp(CD, command_string) == 0) {
