@@ -63,12 +63,13 @@ void start_shell(shell_handle shell)
 		}
 		job_parser_handle job_parser = create_job_parser(buffer);
 		jobs_handle jobs = run_job_parser(job_parser);
+		if (jobs == NULL) { //jobs can't have more than two in one
+			print_error(); //input was incorrectly formatted
+			continue;
+		}
 		executor_handle executor = create_executor(jobs);
 		run(executor);
 		destroy_executor(executor);
-		if (jobs == NULL) {
-			print_error(); //input was incorrectly formatted
-		}
 		destroy_jobs(jobs);
 		destroy_job_parser(job_parser);
 		(shell->runs)++;
