@@ -28,8 +28,8 @@ typedef struct jobs jobs;
 
 typedef jobs * jobs_handle;
 
-jobs_handle create_jobs_handle(jobs_mode jobs_mode, job_handle * jobs, size_t num_jobs);
+jobs_handle create_jobs(jobs_mode jobs_mode, job_handle * jobs, size_t num_jobs);
 
-void destroy_jobs_handle(jobs_handle jobs_handle);
+void destroy_jobs(jobs_handle jobs_handle);
 
 #endif

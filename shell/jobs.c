@@ -8,7 +8,7 @@
 
 #include "jobs.h"
 
-jobs_handle create_jobs_handle(jobs_mode jobs_mode, job_handle * jobs, size_t num_jobs)
+jobs_handle create_jobs(jobs_mode jobs_mode, job_handle * jobs, size_t num_jobs)
 {
 	jobs_handle new = (jobs_handle)malloc(sizeof(*new));
 	new->jobs_mode = jobs_mode;
@@ -21,7 +21,7 @@ jobs_handle create_jobs_handle(jobs_mode jobs_mode, job_handle * jobs, size_t nu
 	return new;
 }
 
-void destroy_jobs_handle(jobs_handle jobs_handle)
+void destroy_jobs(jobs_handle jobs_handle)
 {
 	for (int i = 0; i < jobs_handle->num_jobs; i++)
 	{

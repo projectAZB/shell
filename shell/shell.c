@@ -69,6 +69,7 @@ void start_shell(shell_handle shell)
 		if (jobs == NULL) {
 			print_error(); //input was incorrectly formatted
 		}
+		destroy_jobs(jobs);
 		destroy_job_parser(job_parser);
 		(shell->runs)++;
 	}

@@ -190,7 +190,7 @@ jobs_handle run_job_parser(job_parser_handle job_parser)
 		jobs_mode = serial_m;
 	}
 	
-	jobs_handle result = create_jobs_handle(jobs_mode, jobs, num_jobs);
+	jobs_handle result = create_jobs(jobs_mode, jobs, num_jobs);
 	
 	for (int i = 0; i < num_jobs; i++)
 	{
