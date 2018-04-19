@@ -46,9 +46,7 @@ void run_serial_job(executor_handle executor)
 		
 		if (job_type == normal_t) {
 			if (job->command_types[0] == built_in_t) { //no need to fork a process for the built-in
-				char buffer[] = "built_in\n";
-				write(STDOUT_FILENO, buffer, strlen(buffer));
-				run_built_in_command_with_args(argv);
+				run_built_in_command_with_args(argv, argc);
 			}
 			else {
 				pid_t pid = fork();

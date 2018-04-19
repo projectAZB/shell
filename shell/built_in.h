@@ -9,6 +9,8 @@
 #ifndef built_in_h
 #define built_in_h
 
-void run_built_in_command_with_args(char ** argv);
+#include <stdlib.h>
+
+void run_built_in_command_with_args(char ** argv, size_t argc);
 
 #endif
