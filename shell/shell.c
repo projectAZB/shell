@@ -15,12 +15,14 @@
 #include <stdbool.h>
 #include <string.h>
 #include <ctype.h>
+#include <unistd.h>
 
 #include "job_parser.h"
 #include "executor.h"
 #include "error.h"
 
-#define BUF_SIZE 514
+#define BUF_SIZE 4096
+#define COMMAND_LIM 512
 #define SHELL "520sh> "
 
 struct shell {
@@ -66,20 +68,31 @@ void start_shell(shell_handle shell)
 		
 		FILE * fp = fopen(shell->filename, "r");
 		if (fp == NULL) {
-			print_error_and_exit();
+			print_error();
+			exit(EXIT_FAILURE);
 		}
 		
 		char buffer[BUF_SIZE];
 		
 		while (fgets(buffer, BUF_SIZE, fp) != NULL) {
-			if (buffer[strlen(buffer) - 1] != '\n') { //command was too long
-				print_error_and_exit();
+			
+			write(STDOUT_FILENO, buffer, strlen(buffer));
+			
+			if (strlen(buffer) >= COMMAND_LIM) { //command was too long
+				print_error();
+				continue;
+			}
+			
+			if (all_ending_or_space(buffer)) {
+				continue;
 			}
 			
 			job_parser_handle job_parser = create_job_parser(buffer);
 			jobs_handle jobs = run_job_parser(job_parser);
 			if (jobs == NULL) { //jobs can't have more than two in one
-				print_error_and_exit(); //input was incorrectly formatted
+				print_error(); //input was incorrectly formatted
+				destroy_job_parser(job_parser);
+				continue;
 			}
 			executor_handle executor = create_executor(jobs);
 			run(executor);
@@ -94,11 +107,12 @@ void start_shell(shell_handle shell)
 	else {
 		//shell
 		while (true) {
-			fprintf(stdout, "%s", SHELL);
+			write(STDOUT_FILENO, SHELL, strlen(SHELL));
 			char buffer[BUF_SIZE];
 			fgets(buffer, BUF_SIZE, stdin);
-			if (buffer[strlen(buffer) - 1] != '\n') { //command was too long
-				print_error_and_exit();
+			if (strlen(buffer) >= COMMAND_LIM) { //command was too long
+				print_error();
+				continue;
 			}
 			if (all_ending_or_space(buffer)) {
 				continue;
@@ -106,7 +120,7 @@ void start_shell(shell_handle shell)
 			job_parser_handle job_parser = create_job_parser(buffer);
 			jobs_handle jobs = run_job_parser(job_parser);
 			if (jobs == NULL) { //jobs can't have more than two in one
-				print_error_and_exit(); //input was incorrectly formatted
+				print_error(); //input was incorrectly formatted
 			}
 			executor_handle executor = create_executor(jobs);
 			run(executor);
