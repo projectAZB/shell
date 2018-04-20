@@ -11,9 +11,8 @@
 #include <string.h>
 #include <stdlib.h>
 
-void print_error_and_exit()
+void print_error()
 {
 	char error_message[30] = "An error has occurred\n";
 	write(STDERR_FILENO, error_message, strlen(error_message));
-	exit(EXIT_FAILURE);
 }

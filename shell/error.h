@@ -11,6 +11,6 @@
 
 #include <stdio.h>
 
-void print_error_and_exit(void);
+void print_error(void);
 
 #endif
