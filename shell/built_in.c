@@ -29,9 +29,9 @@ void run_pwd(char ** argv, size_t argc) {
 	size_t size = pathconf(".", _PC_PATH_MAX);
 	char * buffer = (char *)malloc(sizeof(char) * size);
 	getcwd(buffer, size);
-	write(STDOUT_FILENO, buffer, strlen(buffer) + 1);
+	write(STDOUT_FILENO, buffer, strlen(buffer));
 	char newline[] = "\n";
-	write(STDOUT_FILENO, newline, strlen(newline) + 1);
+	write(STDOUT_FILENO, newline, strlen(newline));
 	free(buffer);
 }
 
