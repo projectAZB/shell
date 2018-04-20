@@ -8,9 +8,12 @@
 
 #include "error.h"
 #include <unistd.h>
+#include <string.h>
+#include <stdlib.h>
 
-void print_error()
+void print_error_and_exit()
 {
 	char error_message[30] = "An error has occurred\n";
-	write(STDOUT_FILENO, error_message, 30);
+	write(STDERR_FILENO, error_message, strlen(error_message));
+	exit(EXIT_FAILURE);
 }
