@@ -16,13 +16,19 @@
 
 int main(int argc, const char * argv[]) {
 	
-	if (argc != 1) {
+	if (argc > 2) {
 		print_error_and_exit();
 	}
-	
-	shell_handle shell = create_shell();
-	start_shell(shell);
-	destroy_shell(shell);
+	else if (argc == 2) { //handle input file case
+		shell_handle shell = create_shell_with_filename(argv[1]);
+		start_shell(shell);
+		destroy_shell(shell);
+	}
+	else { //argc == 1
+		shell_handle shell = create_shell();
+		start_shell(shell);
+		destroy_shell(shell);
+	}
 	
 	return 0;
 }
