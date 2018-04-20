@@ -55,8 +55,7 @@ void start_shell(shell_handle shell)
 		char buffer[BUF_SIZE];
 		fgets(buffer, BUF_SIZE, stdin);
 		if (buffer[strlen(buffer) - 1] != '\n') { //command was too long
-			print_error();
-			continue; // loop around again
+			print_error_and_exit();
 		}
 		if (all_ending_or_space(buffer)) {
 			continue;
@@ -64,8 +63,7 @@ void start_shell(shell_handle shell)
 		job_parser_handle job_parser = create_job_parser(buffer);
 		jobs_handle jobs = run_job_parser(job_parser);
 		if (jobs == NULL) { //jobs can't have more than two in one
-			print_error(); //input was incorrectly formatted
-			continue;
+			print_error_and_exit(); //input was incorrectly formatted
 		}
 		executor_handle executor = create_executor(jobs);
 		run(executor);

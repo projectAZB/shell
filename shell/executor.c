@@ -44,7 +44,7 @@ void run_normal_job(char ** argv, pid_t * pid, bool serial)
 		int res = execvp(argv[0], argv);
 		//this will never execute if execvp works
 		if (res < 0) {
-			print_error();
+			print_error_and_exit();
 		}
 	}
 	else { //parent process, pid non-zero
@@ -64,15 +64,13 @@ void run_redirection_job(char ** argv, char ** argv2, pid_t * pid, bool serial)
 		int output_fd = open(argv2[0], O_CREAT | O_WRONLY | O_TRUNC, S_IRWXU);
 		int dup_res = dup2(output_fd, STDOUT_FILENO);
 		if (dup_res == -1) {
-			print_error();
-			exit(EXIT_FAILURE);
+			print_error_and_exit();
 		}
 		
 		int exec_res = execvp(argv[0], argv);
 		//this will never execute if execvp works
 		if (exec_res < 0) {
-			print_error();
-			exit(EXIT_FAILURE);
+			print_error_and_exit();
 		}
 	}
 	else { //parent process, pid non-zero
@@ -93,15 +91,13 @@ void run_pipe_write(int * pipe_fds, char ** argv, pid_t * pid)
 		int dup_res = dup2(pipe_fds[WRITE_END], STDOUT_FILENO); // both of these macros are 1
 		
 		if (dup_res == -1) {
-			print_error();
-			exit(EXIT_FAILURE);
+			print_error_and_exit();
 		}
 		
 		int exec_res = execvp(argv[0], argv);
 		//this will never execute if execvp works
 		if (exec_res < 0) {
-			print_error();
-			return;
+			print_error_and_exit();
 		}
 	}
 	else { //parent
@@ -120,15 +116,13 @@ void run_pipe_read(int * pipe_fds, char ** argv, pid_t * pid)
 		close(pipe_fds[WRITE_END]);
 		
 		if (dup_res == -1) {
-			print_error();
-			exit(5);
+			print_error_and_exit();
 		}
 		
 		int exec_res = execvp(argv[0], argv);
 		//this will never execute if execvp works
 		if (exec_res < 0) {
-			print_error();
-			exit(EXIT_FAILURE);
+			print_error_and_exit();
 		}
 	}
 	else { //back in the parent process now
@@ -145,8 +139,7 @@ void run_serial_job(executor_handle executor)
 		job_handle job = jobs->jobs[i];
 		
 		if (job->num_commands > 2) { //can't have more than 2 commands per job
-			print_error();
-			continue;
+			print_error_and_exit();
 		}
 		
 		job_type job_type = job->job_type;
@@ -165,8 +158,7 @@ void run_serial_job(executor_handle executor)
 		else if (job_type == redirection_t) {
 			//can't be built in and redirected
 			if (job->command_types[0] == built_in_t || job->command_types[1] == built_in_t) {
-				print_error();
-				continue;
+				print_error_and_exit();
 			}
 			
 			pid_t pid;
@@ -181,21 +173,18 @@ void run_serial_job(executor_handle executor)
 		else if (job_type == piped_t) {
 			//can't be built in and piped
 			if (job->command_types[0] == built_in_t || job->command_types[1] == built_in_t) {
-				print_error();
-				continue;
+				print_error_and_exit();
 			}
 			
 			int pipe_fds[2]; //[0] is for using read end, [1] for using write end
 			int pipe_res = pipe(pipe_fds);
 			
 			if (pipe_res == -1) {
-				print_error();
-				continue;
+				print_error_and_exit();
 			}
 			
 			if (pipe_fds[0] == -1 || pipe_fds[1] == -1) {
-				print_error();
-				continue;
+				print_error_and_exit();
 			}
 			
 			char ** argv2 = argv_for_job(job, 1); //get the second job segment part (file to reroute to)
@@ -234,8 +223,7 @@ void run_parallel_job(executor_handle executor)
 		job_handle job = jobs->jobs[i];
 		
 		if (job->num_commands > 2) { //can't have more than 2 commands per job
-			print_error();
-			continue;
+			print_error_and_exit();
 		}
 		
 		job_type job_type = job->job_type;
@@ -258,8 +246,7 @@ void run_parallel_job(executor_handle executor)
 		else if (job_type == redirection_t) {
 			//can't be built in and redirected
 			if (job->command_types[0] == built_in_t || job->command_types[1] == built_in_t) {
-				print_error();
-				continue;
+				print_error_and_exit();
 			}
 			
 			pid_t pid;
@@ -278,21 +265,18 @@ void run_parallel_job(executor_handle executor)
 		else if (job_type == piped_t) {
 			//can't be built in and piped
 			if (job->command_types[0] == built_in_t || job->command_types[1] == built_in_t) {
-				print_error();
-				continue;
+				print_error_and_exit();
 			}
 			
 			int pipe_fds[2]; //[0] is for using read end, [1] for using write end
 			int pipe_res = pipe(pipe_fds);
 			
 			if (pipe_res == -1) {
-				print_error();
-				continue;
+				print_error_and_exit();
 			}
 			
 			if (pipe_fds[0] == -1 || pipe_fds[1] == -1) {
-				print_error();
-				continue;
+				print_error_and_exit();
 			}
 			
 			char ** argv2 = argv_for_job(job, 1); //get the second job segment part (file to reroute to)

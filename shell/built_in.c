@@ -23,8 +23,7 @@ void run_quit() {
 
 void run_pwd(char ** argv, size_t argc) {
 	if (argc > 1) {
-		print_error();
-		return;
+		print_error_and_exit();
 	}
 	size_t size = pathconf(".", _PC_PATH_MAX);
 	char * buffer = (char *)malloc(sizeof(char) * size);
@@ -45,11 +44,11 @@ void run_cd(char ** argv, size_t argc) {
 	else if (argc == 2) {
 		int res = chdir(argv[1]);
 		if (res < 0) {
-			print_error();
+			print_error_and_exit();
 		}
 	}
 	else { //shouldn't be more than 2
-		print_error();
+		print_error_and_exit();
 	}
 }
 

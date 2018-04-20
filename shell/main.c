@@ -12,12 +12,12 @@
 #include <unistd.h>
 
 #include "shell.h"
+#include "error.h"
 
 int main(int argc, const char * argv[]) {
 	
 	if (argc != 1) {
-		char error_message[30] = "An error has occurred\n";
-		write(STDOUT_FILENO, error_message, 30);
+		print_error_and_exit();
 	}
 	
 	shell_handle shell = create_shell();
