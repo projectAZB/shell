@@ -3,11 +3,11 @@ CFLAGS = -pedantic -std=gnu99 -Wall
 DEBUG_FLAGS = -g $(CFLAGS)
 VALGRIND_FLAGS = valgrind --show-reachable=yes --leak-check=full
 
-shell: main.c constants.h shell.h shell.c job_parser.c job_parser.h jobs.c jobs.h job.h job.c parser_helper.c executor.h executor.c\
+mysh: main.c constants.h shell.h shell.c job_parser.c job_parser.h jobs.c jobs.h job.h job.c parser_helper.c executor.h executor.c\
 	built_in.h built_in.c error.h error.c
 	$(CC) $(DEBUG_FLAGS) main.c shell.c job_parser.c jobs.c job.c parser_helper.c executor.c error.c built_in.c -o mysh
 
-vs : shell
+vs : mysh
 	$(VALGRIND_FLAGS) ./mysh
 
 parser_test: parser_test_main.c job_parser.h job_parser.c jobs.c jobs.h job.h job.c constants.h parser_helper.c executor.h executor.c
