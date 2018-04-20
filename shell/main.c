@@ -17,7 +17,8 @@
 int main(int argc, const char * argv[]) {
 	
 	if (argc > 2) {
-		print_error_and_exit();
+		print_error();
+		exit(EXIT_FAILURE);
 	}
 	else if (argc == 2) { //handle input file case
 		shell_handle shell = create_shell_with_filename(argv[1]);
