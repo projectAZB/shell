@@ -12,6 +12,38 @@
 #include <string.h>
 #include <assert.h>
 #include <stdbool.h>
+#include <stdio.h>
+
+//helper methods
+
+bool is_quote(char c)
+{
+	if (c == '"' || c == '\'') {
+		return true;
+	}
+	return false;
+}
+
+void erase_at_index(char * content, int index)
+{
+	size_t content_size = strlen(content);
+	for (int i = index; i < content_size; i++) {
+		content[i] = content[i + 1];
+	}
+}
+
+void remove_quotes(char * buffer)
+{
+	int index = 0;
+	char c = buffer[index]; //going to be a quote if it got here, either single or double
+	while (buffer[index] != '\0') {
+		if (buffer[index] == c) {
+			erase_at_index(buffer, index);
+			continue;
+		}
+		index++;
+	}
+}
 
 command_type command_type_from_string(const char * command_string)
 {
@@ -85,6 +117,9 @@ char ** argv_for_job(job_handle job, int command_index)
 	int index = 0;
 	argv[index++] = strdup(job->command_strings[command_index]);
 	for (int i = 0; i < arg_count; i++) {
+		if (is_quote(job->args[command_index][i][0])) {
+			remove_quotes(job->args[command_index][i]);
+		}
 		argv[index++] = strdup(job->args[command_index][i]);
 	}
 	argv[index] = NULL;
